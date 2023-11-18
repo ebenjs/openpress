@@ -21,6 +21,22 @@ body {
   background-color: $accent-color-darken;
 }
 
+.custom-button {
+  background-color: $button-color-1;
+  border-radius: 12px;
+  color: #000;
+  padding: 10px 15px;
+  text-align: center;
+  transition: 200ms;
+  border: 0;
+
+  &:disabled {
+    filter: saturate(0.2) opacity(0.5);
+    -webkit-filter: saturate(0.2) opacity(0.5);
+    cursor: not-allowed;
+  }
+}
+
 // .scroll-overflow {
 //   overflow-y: scroll;
 // }

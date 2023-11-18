@@ -5,21 +5,31 @@ import ActionBar from '@/components/notes-view/ActionBar.vue';
 import FolderBar from '@/components/notes-view/FolderBar.vue';
 import { onMounted, ref } from 'vue'
 
-const notes = ref([])
-const notesCopy = ref([])
+const folders = ref<Folder[]>([])
+const foldersCopy = ref<Folder[]>([])
+const currentFolderId = ref(0)
 
 const handleSearchTextChanged = (value: string) => {
-  notesCopy.value = notes.value.filter((note: Note) => {
-    return note.title.toLowerCase().includes(value.toLowerCase())
+  foldersCopy.value = folders.value.map((folder) => {
+    return {
+      ...folder,
+      notes: folder.notes.filter((note) => {
+        return note.title.toLowerCase().includes(value.toLowerCase())
+      }),
+    }
   })
+}
+
+const handleSelectedFolderChange = (folderId: number) => {
+  currentFolderId.value = folderId
 }
 
 onMounted(() => {
   fetch('http://localhost:3000/folders')
     .then((response) => response.json())
     .then((json) => {
-      notes.value = json[0].posts
-      notesCopy.value = json[0].posts
+      folders.value = json
+      foldersCopy.value = json
     })
 })
 </script>
@@ -30,14 +40,28 @@ onMounted(() => {
     <div class="h-100 flex-grow-1">
       <div class="row h-100 g-0">
         <div class="col-lg-2 h-100 second-pane">
-          <FoldersView />
+          <FoldersView :folders="foldersCopy" @selected-folder-change="handleSelectedFolderChange" />
         </div>
         <div class="col-lg-3 h-100 third-pane scroll-overflow">
-          <FolderBar label="Default folder" :total="notes.length" />
-          <ActionBar @searchTextChanged="handleSearchTextChanged" />
-          <NotesView :notes="notesCopy" />
+          <div v-if="foldersCopy[currentFolderId]?.notes.length > 0">
+            <FolderBar label="Default folder" :total="foldersCopy[currentFolderId]?.notes.length" />
+            <ActionBar @searchTextChanged="handleSearchTextChanged" />
+            <NotesView :notes="foldersCopy[currentFolderId]?.notes" />
+          </div>
+          <div v-else class="no-notes-wrapper d-flex flex-column justify-content-center align-items-center h-100">
+            <span class="material-symbols-outlined text-center text-white" style="font-size: 100px">
+              folder_open
+            </span>
+            <p class="px-4 text-center">
+              The selected folder looks empty. Please add some notes.
+            </p>
+            <div class="d-flex justify-content-center">
+              <button class="custom-button">Add note</button>
+            </div>
+          </div>
         </div>
-        <div class="col-lg-7 h-100 fourth-pane">Hi</div>
+        <div class=" col-lg-7 h-100 fourth-pane">Hi
+        </div>
       </div>
     </div>
   </div>
@@ -62,5 +86,21 @@ onMounted(() => {
 
 .third-pane {
   @include default-border-rigth;
+
+  .no-notes-wrapper {
+    @include medium;
+  }
+
+  .custom-button {
+    @include small;
+    @include bold;
+
+    &:not(:disabled):hover,
+    &:not(:disabled):focus {
+      outline: 0;
+      background: $button-color-1-hover;
+      color: $hover-color-primary;
+    }
+  }
 }
 </style>

@@ -1,8 +1,9 @@
 {
   "folders": [
     {
+      "id": 0,
       "name": "Default folder",
-      "posts": [
+      "notes": [
         {
           "userId": 1,
           "id": 1,
