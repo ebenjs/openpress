@@ -1,0 +1,26 @@
+@import './global/colors';
+@import './global/variables.scss';
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: $dull-white !important;
+  background-color: $primary-color;
+  font-family: $default-font-family;
+  overflow-y: hidden;
+}
+
+.background-accent {
+  background-color: $accent-color;
+}
+
+.background-accent-darken {
+  background-color: $accent-color-darken;
+}
+
+// .scroll-overflow {
+//   overflow-y: scroll;
+// }

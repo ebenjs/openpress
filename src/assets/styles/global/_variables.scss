@@ -1,0 +1,13 @@
+@import '_colors';
+
+$default-font-family: "Fira Sans", "helvetica neue", arial, sans-serif;
+
+@mixin default-border-rigth {
+    border-right: 1px solid;
+    border-right-color: $default-border-color;
+}
+
+@mixin default-border-left {
+    border-left: 1px solid;
+    border-left-color: $default-border-color;
+}
