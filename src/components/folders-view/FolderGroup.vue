@@ -22,7 +22,7 @@ const props = defineProps({
                     {{ folder.name }}
                 </span>
                 <span v-if="folder.notes.length > 0" class="badge rounded-pill background-accen-darken ms-auto">
-                    {{ folder.notes?.length }}
+                    {{ folder.notes.length }}
                 </span>
             </span>
         </div>

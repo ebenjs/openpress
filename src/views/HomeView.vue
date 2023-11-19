@@ -22,6 +22,24 @@ const handleSearchTextChanged = (value: string) => {
 
 const handleSelectedFolderChange = (folderId: number) => {
   currentFolderId.value = folderId
+  handleFilterOptionsChanged({ read: true, unread: true })
+}
+
+const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {
+  foldersCopy.value = folders.value.map((folder) => {
+    return {
+      ...folder,
+      notes: folder.notes.filter((note) => {
+        if (filterOptions.read && filterOptions.unread) {
+          return true
+        } else if (filterOptions.read) {
+          return note.isRead
+        } else if (filterOptions.unread) {
+          return !note.isRead
+        }
+      }),
+    }
+  })
 }
 
 onMounted(() => {
@@ -40,13 +58,16 @@ onMounted(() => {
     <div class="h-100 flex-grow-1">
       <div class="row h-100 g-0">
         <div class="col-lg-2 h-100 second-pane">
-          <FoldersView :folders="foldersCopy" @selected-folder-change="handleSelectedFolderChange" />
+          <FoldersView :folders="folders" @selected-folder-change="handleSelectedFolderChange" />
         </div>
         <div class="col-lg-3 h-100 third-pane scroll-overflow">
-          <div v-if="foldersCopy[currentFolderId]?.notes.length > 0">
+          <div v-if="(folders[currentFolderId]?.notes.length > 0)">
             <FolderBar label="Default folder" :total="foldersCopy[currentFolderId]?.notes.length" />
-            <ActionBar @searchTextChanged="handleSearchTextChanged" />
-            <NotesView :notes="foldersCopy[currentFolderId]?.notes" />
+            <ActionBar @search-text-changed="handleSearchTextChanged"
+              @filter-options-changed="handleFilterOptionsChanged" />
+            <NotesView v-if="foldersCopy[currentFolderId]?.notes.length > 0"
+              :notes="foldersCopy[currentFolderId]?.notes" />
+            <p v-else class="px-3 py-2">No result</p>
           </div>
           <div v-else class="no-notes-wrapper d-flex flex-column justify-content-center align-items-center h-100">
             <span class="material-symbols-outlined text-center text-white" style="font-size: 100px">

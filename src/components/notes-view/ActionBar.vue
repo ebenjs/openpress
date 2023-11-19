@@ -4,17 +4,26 @@ import { ref, watch, onMounted } from 'vue';
 import SearchBar from './SearchBar.vue';
 import CustomPopover from './CustomPopover.vue';
 
-const emit = defineEmits(['searchTextChanged']);
+const emit = defineEmits(['search-text-changed', 'filter-options-changed']);
 const searchText = ref('');
 const isPopoverActive = ref(false);
+const filterOptions = ref({
+    read: true,
+    unread: true,
+});
 
 const togglePopoverState = () => {
     isPopoverActive.value = !isPopoverActive.value;
 };
 
 watch(searchText, (value) => {
-    emit('searchTextChanged', value);
+    emit('search-text-changed', value);
 });
+
+watch(filterOptions.value, (value) => {
+    emit('filter-options-changed', value);
+});
+
 onMounted(() => {
     window.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
@@ -45,13 +54,15 @@ onMounted(() => {
                     Filter notes in this directory by
                 </p>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="read" id="readCheckbox">
+                    <input v-model="filterOptions.read" class="form-check-input" type="checkbox" value="read"
+                        id="readCheckbox">
                     <label class="form-check-label" for="readCheckbox">
                         Read
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="unread" id="unreadCheckbox">
+                    <input v-model="filterOptions.unread" class="form-check-input" type="checkbox" value="unread"
+                        id="unreadCheckbox">
                     <label class="form-check-label" for="unreadCheckbox">
                         Unread
                     </label>

@@ -4,6 +4,7 @@ interface Note {
   description: string
   body: string
   createdAt: string
+  isRead?: boolean
 }
 
 interface Folder {
@@ -12,4 +13,9 @@ interface Folder {
   icon: string
   background?: string
   notes: Note[]
+}
+
+interface FilterOptions {
+  read: boolean
+  unread: boolean
 }
