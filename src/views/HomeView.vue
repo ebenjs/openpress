@@ -8,11 +8,13 @@ import EditorView from '@/components/EditorView.vue';
 import { DataAccessLocalStorageImpl } from '@/services/data-access-localstorage-impl';
 import { type DataAccess } from '@/services/data-access';
 import { appConstants } from '@/utilities/consts';
+import { generateUniqueId } from '@/utilities/helpers';
 
 const folders = ref<Folder[]>([])
 const foldersCopy = ref<Folder[]>([])
 const currentFolderId = ref(0)
 const currentNote = ref<Note | null>(null)
+const datadataAccessLocalStorageImpl: DataAccess = new DataAccessLocalStorageImpl();
 
 const handleSearchTextChanged = (value: string) => {
   foldersCopy.value = folders.value.map((folder) => {
@@ -49,13 +51,39 @@ const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {
 }
 
 const handleActiveNoteChanged = (note: Note) => {
-  console.log(note)
   currentNote.value = note
 }
 
-onMounted(() => {
-  const datadataAccessLocalStorageImpl: DataAccess = new DataAccessLocalStorageImpl();
+const handleAddNote = () => {
+  const newNote: Note = {
+    id: generateUniqueId(),
+    title: 'added recently',
+    body: 'added recently',
+    description: 'added recently',
+    isRead: false,
+    createdAt: '2021-08-01T00:00:00.000Z',
+  }
 
+  foldersCopy.value = foldersCopy.value.map((folder) => {
+    if (folder.id === currentFolderId.value) {
+      return {
+        ...folder,
+        notes: [newNote, ...folder.notes],
+      }
+    } else {
+      return folder
+    }
+  })
+
+
+  datadataAccessLocalStorageImpl.post<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY, foldersCopy.value).then(() => {
+    folders.value = foldersCopy.value
+  }).catch((error) => {
+    console.log(error)
+  })
+}
+
+onMounted(() => {
   datadataAccessLocalStorageImpl.get<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY).then((receivedFolders) => {
     folders.value = receivedFolders
     foldersCopy.value = receivedFolders
@@ -77,8 +105,8 @@ onMounted(() => {
         <div class="col-lg-3 h-100 third-pane scroll-overflow">
           <div v-if="(folders[currentFolderId]?.notes.length > 0)">
             <FolderBar label="Default folder" :total="foldersCopy[currentFolderId]?.notes.length" />
-            <ActionBar @search-text-changed="handleSearchTextChanged"
-              @filter-options-changed="handleFilterOptionsChanged" />
+            <ActionBar @search-text-changed="handleSearchTextChanged" @filter-options-changed="handleFilterOptionsChanged"
+              @add-note="handleAddNote" />
             <NotesView v-if="foldersCopy[currentFolderId]?.notes.length > 0" :notes="foldersCopy[currentFolderId]?.notes"
               @active-note-changed="handleActiveNoteChanged" />
             <p v-else class="px-3 py-2">No result</p>

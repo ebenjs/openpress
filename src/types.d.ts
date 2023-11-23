@@ -1,5 +1,5 @@
 interface Note {
-  id: number
+  id: number | string
   title: string
   description: string
   body: string

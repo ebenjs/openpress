@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type PropType, onMounted } from 'vue';
+import { ref, type PropType, onMounted, watch } from 'vue';
 import useTextFormatter from '../utilities/text-formatter.vue';
 import useDateHelper from '../utilities/date-helper.vue';
 
@@ -30,6 +30,13 @@ onMounted(() => {
             emit('active-note-changed', null);
         }
     });
+})
+
+watch(() => props.notes, (notes) => {
+    console.log('notes changed', notes[0]);
+
+    activeNote.value = notes[0];
+    emit('active-note-changed', notes[0]);
 })
 
 </script>

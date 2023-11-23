@@ -4,7 +4,7 @@ import { ref, watch, onMounted } from 'vue';
 import SearchBar from './SearchBar.vue';
 import CustomPopover from './CustomPopover.vue';
 
-const emit = defineEmits(['search-text-changed', 'filter-options-changed']);
+const emit = defineEmits(['search-text-changed', 'filter-options-changed', 'add-note']);
 const searchText = ref('');
 const isPopoverActive = ref(false);
 const filterOptions = ref({
@@ -14,6 +14,10 @@ const filterOptions = ref({
 
 const togglePopoverState = () => {
     isPopoverActive.value = !isPopoverActive.value;
+};
+
+const handleAddNote = () => {
+    emit('add-note');
 };
 
 watch(searchText, (value) => {
@@ -33,7 +37,7 @@ onMounted(() => {
 
     window.addEventListener('click', (event) => {
         const target = event.target as HTMLElement;
-        if (!target.closest('.filter-wrapper')) {
+        if (!target.closest('.actions-wrapper')) {
             isPopoverActive.value = false;
         }
 
@@ -43,10 +47,15 @@ onMounted(() => {
 
 <template>
     <div class="d-flex align-items-center action-bar">
-        <div class="filter-wrapper">
-            <button class="filter-button" @click="togglePopoverState">
+        <div class="actions-wrapper d-flex">
+            <button class="filter-button p-0" @click="togglePopoverState">
                 <span class="material-symbols-outlined">
                     tune
+                </span>
+            </button>
+            <button class="add-button p-0" @click="handleAddNote">
+                <span class="material-symbols-outlined">
+                    post_add
                 </span>
             </button>
             <CustomPopover v-if="isPopoverActive">
@@ -81,17 +90,21 @@ onMounted(() => {
     padding: 10px;
     border-bottom: solid 1px $default-border-color;
 
-    .filter-wrapper {
-        width: 24px;
+    .actions-wrapper {
+        // width: 48px;
         height: 24px;
 
-        .filter-button {
+        .filter-button,
+        .add-button {
             background-color: transparent;
             border: none;
-            padding: 0;
             color: $dull-white;
             width: 24px;
             height: 24px;
+        }
+
+        .add-button {
+            margin-left: 5px;
         }
 
         .filter-title {
