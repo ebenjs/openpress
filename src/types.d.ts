@@ -10,7 +10,7 @@ interface Note {
 interface Folder {
   id: number
   name: string
-  icon: string
+  icon?: string
   background?: string
   notes: Note[]
 }

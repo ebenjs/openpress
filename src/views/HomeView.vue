@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import FoldersView from '@/components/FoldersView.vue';
 import NotesView from '@/components/NotesView.vue';
 import ActionBar from '@/components/notes-view/ActionBar.vue';
 import FolderBar from '@/components/notes-view/FolderBar.vue';
-import { onMounted, ref } from 'vue'
+import EditorView from '@/components/EditorView.vue';
+import { DataAccessLocalStorageImpl } from '@/services/data-access-localstorage-impl';
+import { type DataAccess } from '@/services/data-access';
+import { appConstants } from '@/utilities/consts';
 
 const folders = ref<Folder[]>([])
 const foldersCopy = ref<Folder[]>([])
 const currentFolderId = ref(0)
+const currentNote = ref<Note | null>(null)
 
 const handleSearchTextChanged = (value: string) => {
   foldersCopy.value = folders.value.map((folder) => {
@@ -23,6 +28,7 @@ const handleSearchTextChanged = (value: string) => {
 const handleSelectedFolderChange = (folderId: number) => {
   currentFolderId.value = folderId
   handleFilterOptionsChanged({ read: true, unread: true })
+  currentNote.value = null
 }
 
 const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {
@@ -42,13 +48,21 @@ const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {
   })
 }
 
+const handleActiveNoteChanged = (note: Note) => {
+  console.log(note)
+  currentNote.value = note
+}
+
 onMounted(() => {
-  fetch('http://localhost:3000/folders')
-    .then((response) => response.json())
-    .then((json) => {
-      folders.value = json
-      foldersCopy.value = json
-    })
+  const datadataAccessLocalStorageImpl: DataAccess = new DataAccessLocalStorageImpl();
+
+  datadataAccessLocalStorageImpl.get<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY).then((receivedFolders) => {
+    folders.value = receivedFolders
+    foldersCopy.value = receivedFolders
+  }).catch((error) => {
+    console.log(error)
+  })
+
 })
 </script>
 
@@ -65,8 +79,8 @@ onMounted(() => {
             <FolderBar label="Default folder" :total="foldersCopy[currentFolderId]?.notes.length" />
             <ActionBar @search-text-changed="handleSearchTextChanged"
               @filter-options-changed="handleFilterOptionsChanged" />
-            <NotesView v-if="foldersCopy[currentFolderId]?.notes.length > 0"
-              :notes="foldersCopy[currentFolderId]?.notes" />
+            <NotesView v-if="foldersCopy[currentFolderId]?.notes.length > 0" :notes="foldersCopy[currentFolderId]?.notes"
+              @active-note-changed="handleActiveNoteChanged" />
             <p v-else class="px-3 py-2">No result</p>
           </div>
           <div v-else class="no-notes-wrapper d-flex flex-column justify-content-center align-items-center h-100">
@@ -81,7 +95,8 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class=" col-lg-7 h-100 fourth-pane">Hi
+        <div class=" col-lg-7 h-100 fourth-pane">
+          <EditorView v-if="currentNote" :note="currentNote" />
         </div>
       </div>
     </div>

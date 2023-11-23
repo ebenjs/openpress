@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
+import { ref, type PropType, onMounted } from 'vue';
 import useTextFormatter from '../utilities/text-formatter.vue';
 import useDateHelper from '../utilities/date-helper.vue';
 
@@ -11,6 +11,8 @@ const props = defineProps({
     },
 })
 
+const emit = defineEmits(['active-note-changed']);
+
 const { capitalizeFirstChar } = useTextFormatter();
 const { getCurrentDate } = useDateHelper();
 
@@ -18,7 +20,17 @@ const activeNote = ref<Note | null>(null);
 
 const handleNoteClick = (note: Note) => {
     activeNote.value = note;
+    emit('active-note-changed', note);
 }
+
+onMounted(() => {
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            activeNote.value = null;
+            emit('active-note-changed', null);
+        }
+    });
+})
 
 </script>
 
