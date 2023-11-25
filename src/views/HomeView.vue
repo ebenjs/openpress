@@ -10,33 +10,36 @@ import { type DataAccess } from '@/services/data-access';
 import { appConstants } from '@/utilities/consts';
 import { generateUniqueId } from '@/utilities/helpers';
 import type { OutputData } from '@editorjs/editorjs';
+import { useFolderStore } from '@/stores/folder';
 import type { FilterOptions, Folder, Note } from '@/types';
 
-const folders = ref<Folder[]>([])
-const foldersCopy = ref<Folder[]>([])
-const currentFolderId = ref(0)
-const currentNote = ref<Note | null>(null)
+const folderStore = useFolderStore();
+// const folders = ref<Folder[]>([])
+const foldersCopy = ref<Folder[]>(folderStore.folders)
+// const currentFolderId = ref(0)
+// const currentNote = ref<Note | null>(null)
 const datadataAccessLocalStorageImpl: DataAccess = new DataAccessLocalStorageImpl();
 
 const handleSearchTextChanged = (value: string) => {
-  foldersCopy.value = folders.value.map((folder) => {
+  foldersCopy.value = folderStore.folders.map((folder: Folder) => {
     return {
       ...folder,
       notes: folder.notes.filter((note) => {
-        return note.title.toLowerCase().includes(value.toLowerCase())
+        if (note.data.blocks.length === 0) return false
+        return note.data.blocks[0].data.text.toLowerCase().includes(value.toLowerCase())
       }),
     }
   })
 }
 
 const handleSelectedFolderChange = (folderId: number) => {
-  currentFolderId.value = folderId
+  folderStore.currentFolderId = folderId
   handleFilterOptionsChanged({ read: true, unread: true })
-  currentNote.value = null
+  folderStore.currentNote = null
 }
 
 const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {
-  foldersCopy.value = folders.value.map((folder) => {
+  foldersCopy.value = folderStore.folders.map((folder: Folder) => {
     return {
       ...folder,
       notes: folder.notes.filter((note) => {
@@ -53,7 +56,7 @@ const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {
 }
 
 const handleActiveNoteChanged = (note: Note) => {
-  currentNote.value = note
+  folderStore.currentNote = note
 }
 
 const handleAddNote = () => {
@@ -61,18 +64,7 @@ const handleAddNote = () => {
   const newNote: Note = {
     id: generateUniqueId(),
     data: {
-      time: Date.now(),
-      blocks: [
-        {
-          id: 'oUq2g_tl8y',
-          type: 'header',
-          data: {
-            text: 'Editor.js',
-            level: 2,
-          },
-        },
-      ],
-      version: '2.8.1',
+      blocks: [],
     },
     isRead: false,
     createdAt: '2021-08-01T00:00:00.000Z',
@@ -84,7 +76,7 @@ const handleAddNote = () => {
 
   foldersCopy.value = foldersCopy.value.map((folder) => {
 
-    if (folder.id === currentFolderId.value) {
+    if (folder.id === folderStore.currentFolderId) {
       return {
         ...folder,
         notes: [newNote, ...folder.notes],
@@ -95,7 +87,7 @@ const handleAddNote = () => {
   })
 
   datadataAccessLocalStorageImpl.post<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY, foldersCopy.value).then(() => {
-    folders.value = foldersCopy.value
+    folderStore.folders = foldersCopy.value
   }).catch((error) => {
     console.log(error)
   })
@@ -103,7 +95,7 @@ const handleAddNote = () => {
 
 const handleNoteEdited = (note: Note) => {
   foldersCopy.value = foldersCopy.value.map((folder) => {
-    if (folder.id === currentFolderId.value) {
+    if (folder.id === folderStore.currentFolderId) {
       return {
         ...folder,
         notes: folder.notes.map((folderNote) => {
@@ -120,7 +112,7 @@ const handleNoteEdited = (note: Note) => {
   })
 
   datadataAccessLocalStorageImpl.post<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY, foldersCopy.value).then(() => {
-    folders.value = foldersCopy.value
+    folderStore.folders = foldersCopy.value
   }).catch((error) => {
     console.log(error)
   })
@@ -128,7 +120,7 @@ const handleNoteEdited = (note: Note) => {
 
 onMounted(() => {
   datadataAccessLocalStorageImpl.get<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY).then((receivedFolders) => {
-    folders.value = receivedFolders
+    folderStore.folders = receivedFolders
     foldersCopy.value = receivedFolders
   }).catch((error) => {
     console.log(error)
@@ -142,15 +134,16 @@ onMounted(() => {
     <div class="h-100 flex-grow-1">
       <div class="row h-100 g-0">
         <div class="col-lg-2 h-100 second-pane">
-          <FoldersView :folders="folders" @selected-folder-change="handleSelectedFolderChange" />
+          <FoldersView :folders="folderStore.folders" @selected-folder-change="handleSelectedFolderChange" />
         </div>
         <div class="col-lg-3 h-100 third-pane scroll-overflow">
-          <div v-if="(folders[currentFolderId]?.notes.length > 0)">
-            <FolderBar label="Default folder" :total="foldersCopy[currentFolderId]?.notes.length" />
+          <div v-if="(folderStore.folders[folderStore.currentFolderId]?.notes.length > 0)">
+            <FolderBar :label="foldersCopy[folderStore.currentFolderId].name"
+              :total="foldersCopy[folderStore.currentFolderId]?.notes.length" />
             <ActionBar @search-text-changed="handleSearchTextChanged" @filter-options-changed="handleFilterOptionsChanged"
               @add-note="handleAddNote" />
-            <NotesView v-if="foldersCopy[currentFolderId]?.notes.length > 0" :notes="foldersCopy[currentFolderId]?.notes"
-              @active-note-changed="handleActiveNoteChanged" />
+            <NotesView v-if="foldersCopy[folderStore.currentFolderId]?.notes.length > 0"
+              :notes="foldersCopy[folderStore.currentFolderId]?.notes" @active-note-changed="handleActiveNoteChanged" />
             <p v-else class="px-3 py-2">No result</p>
           </div>
           <div v-else class="no-notes-wrapper d-flex flex-column justify-content-center align-items-center h-100">
@@ -166,7 +159,7 @@ onMounted(() => {
           </div>
         </div>
         <div class=" col-lg-7 h-100 fourth-pane">
-          <EditorView v-if="currentNote" :note="currentNote" @note-edited="handleNoteEdited" />
+          <EditorView v-if="folderStore.currentNote" :note="folderStore.currentNote" @note-edited="handleNoteEdited" />
         </div>
       </div>
     </div>
@@ -210,3 +203,4 @@ onMounted(() => {
   }
 }
 </style>
+@/stores/folders

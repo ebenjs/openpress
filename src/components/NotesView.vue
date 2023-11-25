@@ -21,7 +21,12 @@ const activeNote = ref<Note | null>(null);
 
 const computeNoteTitle = (note: Note) => {
     // if note first block data is not empty, return it else return 'Untitled'
-    return note.data.blocks[0].data.text || 'Untitled';
+    if (note.data.blocks.length > 0) {
+        if (note.data.blocks[0].data.text !== '') {
+            return note.data.blocks[0].data.text;
+        }
+    }
+    return 'Untitled';
 }
 
 const computeNoteDescription = (note: Note) => {

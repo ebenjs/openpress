@@ -3,7 +3,7 @@
 const props = defineProps({
     label: {
         type: String,
-        default: 'Untitled',
+        default: 'Default folder',
     },
     total: {
         type: Number,

@@ -7,6 +7,12 @@ import Alert from 'editorjs-alert';
 import Warning from '@editorjs/warning';
 import type { Note } from '@/types';
 
+const editorTools = {
+    quote: Quote,
+    header: Header,
+    alert: Alert,
+    warning: Warning,
+};
 const props = defineProps({
     note: {
         type: Object as PropType<Note> | null,
@@ -20,31 +26,15 @@ const noteCopy = ref<Note>(props.note);
 const editor = ref<EditorJS>(new EditorJS({
     holder: 'editorjs',
     placeholder: 'Let`s write an awesome story!',
-    tools: {
-        quote: Quote,
-        header: Header,
-        alert: Alert,
-        warning: Warning,
-    },
-    data: {
-        "time": 1550476186479,
-        "blocks": [
-            {
-                "id": "oUq2g_tl8y",
-                "type": "header",
-                "data": {
-                    "text": "Editor.js",
-                    "level": 2
-                }
-            },
-        ],
-        "version": "2.8.1"
-    },
+    tools: editorTools,
 }));
 
 
 watch(() => props.note, (note) => {
     noteCopy.value = note;
+    editor.value.render(note.data);
+    console.log('note changed', note);
+
 });
 
 onMounted(() => {
@@ -52,7 +42,7 @@ onMounted(() => {
         editor.value.save().then((outputData) => {
             console.log('Article data: ', outputData);
             noteCopy.value.data = outputData;
-            emit('note-edited', outputData);
+            // emit('note-edited', outputData);
         }).catch((error) => {
             console.log('Saving failed: ', error);
         });
