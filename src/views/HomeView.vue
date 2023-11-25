@@ -9,6 +9,8 @@ import { DataAccessLocalStorageImpl } from '@/services/data-access-localstorage-
 import { type DataAccess } from '@/services/data-access';
 import { appConstants } from '@/utilities/consts';
 import { generateUniqueId } from '@/utilities/helpers';
+import type { OutputData } from '@editorjs/editorjs';
+import type { FilterOptions, Folder, Note } from '@/types';
 
 const folders = ref<Folder[]>([])
 const foldersCopy = ref<Folder[]>([])
@@ -55,16 +57,33 @@ const handleActiveNoteChanged = (note: Note) => {
 }
 
 const handleAddNote = () => {
+
   const newNote: Note = {
     id: generateUniqueId(),
-    title: 'added recently',
-    body: 'added recently',
-    description: 'added recently',
+    data: {
+      time: Date.now(),
+      blocks: [
+        {
+          id: 'oUq2g_tl8y',
+          type: 'header',
+          data: {
+            text: 'Editor.js',
+            level: 2,
+          },
+        },
+      ],
+      version: '2.8.1',
+    },
     isRead: false,
     createdAt: '2021-08-01T00:00:00.000Z',
   }
 
+  if (!(foldersCopy.value.length > 0)) {
+    foldersCopy.value = appConstants.DEFAULT_FOLDERS
+  }
+
   foldersCopy.value = foldersCopy.value.map((folder) => {
+
     if (folder.id === currentFolderId.value) {
       return {
         ...folder,
@@ -75,6 +94,30 @@ const handleAddNote = () => {
     }
   })
 
+  datadataAccessLocalStorageImpl.post<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY, foldersCopy.value).then(() => {
+    folders.value = foldersCopy.value
+  }).catch((error) => {
+    console.log(error)
+  })
+}
+
+const handleNoteEdited = (note: Note) => {
+  foldersCopy.value = foldersCopy.value.map((folder) => {
+    if (folder.id === currentFolderId.value) {
+      return {
+        ...folder,
+        notes: folder.notes.map((folderNote) => {
+          if (folderNote.id === note.id) {
+            return note
+          } else {
+            return folderNote
+          }
+        }),
+      }
+    } else {
+      return folder
+    }
+  })
 
   datadataAccessLocalStorageImpl.post<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY, foldersCopy.value).then(() => {
     folders.value = foldersCopy.value
@@ -90,7 +133,6 @@ onMounted(() => {
   }).catch((error) => {
     console.log(error)
   })
-
 })
 </script>
 
@@ -119,12 +161,12 @@ onMounted(() => {
               The selected folder looks empty. Please add some notes.
             </p>
             <div class="d-flex justify-content-center">
-              <button class="custom-button">Add note</button>
+              <button class="custom-button" @click="handleAddNote">Add note</button>
             </div>
           </div>
         </div>
         <div class=" col-lg-7 h-100 fourth-pane">
-          <EditorView v-if="currentNote" :note="currentNote" />
+          <EditorView v-if="currentNote" :note="currentNote" @note-edited="handleNoteEdited" />
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
 import { ref, type PropType, onMounted, watch } from 'vue';
 import useTextFormatter from '../utilities/text-formatter.vue';
 import useDateHelper from '../utilities/date-helper.vue';
+import type { Note } from '@/types';
 
 
 const props = defineProps({
@@ -18,6 +19,21 @@ const { getCurrentDate } = useDateHelper();
 
 const activeNote = ref<Note | null>(null);
 
+const computeNoteTitle = (note: Note) => {
+    // if note first block data is not empty, return it else return 'Untitled'
+    return note.data.blocks[0].data.text || 'Untitled';
+}
+
+const computeNoteDescription = (note: Note) => {
+    // if note block exist and is text based(p or h), return it else return 'No description'
+    if (note.data.blocks.length > 1) {
+        if (note.data.blocks[1].type === 'paragraph' || note.data.blocks[1].type === 'header') {
+            return note.data.blocks[1].data.text;
+        }
+    }
+    return 'No description';
+}
+
 const handleNoteClick = (note: Note) => {
     activeNote.value = note;
     emit('active-note-changed', note);
@@ -33,8 +49,6 @@ onMounted(() => {
 })
 
 watch(() => props.notes, (notes) => {
-    console.log('notes changed', notes[0]);
-
     activeNote.value = notes[0];
     emit('active-note-changed', notes[0]);
 })
@@ -44,8 +58,8 @@ watch(() => props.notes, (notes) => {
 <template>
     <div v-for="note in notes" :key="note.id">
         <div :class="`item-content ${note === activeNote ? 'active' : ''}`" @click="handleNoteClick(note)">
-            <p class="item-title">{{ capitalizeFirstChar(note.title) }}</p>
-            <p class="item-description">{{ note.body }}</p>
+            <p class="item-title">{{ capitalizeFirstChar(computeNoteTitle(note)) }}</p>
+            <p class="item-description">{{ computeNoteDescription(note) }}</p>
             <small class="item-meta">
                 <span class="item-meta-item d-flex align-items-center pt-2">
                     <span class="author-picture">
