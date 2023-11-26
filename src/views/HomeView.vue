@@ -5,6 +5,7 @@ import NotesView from '@/components/NotesView.vue';
 import ActionBar from '@/components/notes-view/ActionBar.vue';
 import FolderBar from '@/components/notes-view/FolderBar.vue';
 import EditorView from '@/components/EditorView.vue';
+import NoNoteSelected from '@/components/notes-view/NoNoteSelected.vue';
 import { DataAccessLocalStorageImpl } from '@/services/data-access-localstorage-impl';
 import { type DataAccess } from '@/services/data-access';
 import { appConstants } from '@/utilities/consts';
@@ -38,8 +39,6 @@ const handleSelectedFolderChange = (folderId: number) => {
 }
 
 const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {
-
-  // reset the array to its original state
 
   foldersCopy.value = folderStore.folders;
 
@@ -94,15 +93,6 @@ const handleAddNote = () => {
 }
 
 const handleNoteEdited = (note: Note) => {
-  console.log('handle note edited', note);
-  console.log('folderStore.folders', folderStore.folders);
-  console.log('folderStore.currentFolderId', folderStore.currentFolderId);
-  console.log('foldersCopy.value', foldersCopy.value);
-  console.log('-----------------------------------------------------');
-
-
-
-
   folderStore.folders = folderStore.folders.map((folder) => {
     if (folder.id === folderStore.currentFolderId) {
       return {
@@ -168,6 +158,7 @@ onMounted(() => {
         </div>
         <div class=" col-lg-7 h-100 fourth-pane">
           <EditorView v-if="folderStore.currentNote" :note="folderStore.currentNote" @note-edited="handleNoteEdited" />
+          <NoNoteSelected v-else />
         </div>
       </div>
     </div>

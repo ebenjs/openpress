@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import type { Folder } from '@/types';
 import { type PropType } from 'vue';
+import { useFolderStore } from '@/stores/folder';
 
+const folderStore = useFolderStore();
 const props = defineProps({
     folder: {
         type: Object as PropType<Folder>,
@@ -11,7 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="folder-group">
+    <div :class="`folder-group ${folder.id === folderStore.currentFolderId ? 'active' : ''}`">
         <div class="folder-group-header d-flex align-items-center">
             <span class="folder-icon material-symbols-outlined" :style="folder.background ? `${folder.background};-webkit-text-fill-color: transparent;
     -webkit-background-clip: text;` : ''">
@@ -53,6 +56,15 @@ const props = defineProps({
         padding-left: 10px;
         color: $white;
         @include small;
+    }
+}
+
+.active {
+    background-color: $hover-color-primary;
+    border-left-color: $accent-color;
+
+    .folder-group-name {
+        color: $accent-color;
     }
 }
 </style>
