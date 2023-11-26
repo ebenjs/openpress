@@ -1,17 +1,24 @@
+import type { OutputData } from '@editorjs/editorjs'
+
 interface Note {
-  id: number
-  title: string
-  description: string
-  body: string
+  id: number | string
+  data: OutputData
   createdAt: string
   isRead?: boolean
+}
+
+interface EditorOutputFormat {
+  time: number
+  blocks: []
+  version: string
 }
 
 interface Folder {
   id: number
   name: string
-  icon: string
+  icon?: string
   background?: string
+  isDefault?: boolean
   notes: Note[]
 }
 

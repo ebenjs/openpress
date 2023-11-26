@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
+import { type PropType, onMounted } from 'vue';
 import useTextFormatter from '../utilities/text-formatter.vue';
 import useDateHelper from '../utilities/date-helper.vue';
+import type { Note } from '@/types';
+import { useFolderStore } from '@/stores/folder';
 
+const folderStore = useFolderStore();
 
 const props = defineProps({
     notes: {
@@ -14,19 +17,48 @@ const props = defineProps({
 const { capitalizeFirstChar } = useTextFormatter();
 const { getCurrentDate } = useDateHelper();
 
-const activeNote = ref<Note | null>(null);
+const computeNoteTitle = (note: Note) => {
+    // if note first block data is not empty, return it else return 'Untitled'
+    if (note.data.blocks.length > 0) {
+        if (note.data.blocks[0].data.text !== '') {
+            return note.data.blocks[0].data.text;
+        }
+    }
+    return 'Untitled';
+}
+
+const computeNoteDescription = (note: Note) => {
+    // if note block exist and is text based(p or h), return it else return 'No description'
+    if (note.data.blocks.length > 1) {
+        if (note.data.blocks[1].type === 'paragraph' || note.data.blocks[1].type === 'header') {
+            return note.data.blocks[1].data.text;
+        }
+    }
+    return 'No description';
+}
 
 const handleNoteClick = (note: Note) => {
-    activeNote.value = note;
+    folderStore.currentNote = note;
+    folderStore.changeCurrentSelectedNote(note);
 }
+
+onMounted(() => {
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            console.log('esc pressed');
+
+            folderStore.changeCurrentSelectedNote(null);
+        }
+    });
+})
 
 </script>
 
 <template>
     <div v-for="note in notes" :key="note.id">
-        <div :class="`item-content ${note === activeNote ? 'active' : ''}`" @click="handleNoteClick(note)">
-            <p class="item-title">{{ capitalizeFirstChar(note.title) }}</p>
-            <p class="item-description">{{ note.body }}</p>
+        <div :class="`item-content ${note === folderStore.currentNote ? 'active' : ''}`" @click="handleNoteClick(note)">
+            <p class="item-title">{{ capitalizeFirstChar(computeNoteTitle(note)) }}</p>
+            <p class="item-description">{{ computeNoteDescription(note) }}</p>
             <small class="item-meta">
                 <span class="item-meta-item d-flex align-items-center pt-2">
                     <span class="author-picture">
