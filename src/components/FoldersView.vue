@@ -22,7 +22,15 @@ const props = defineProps({
 
 const emit = defineEmits(['selected-folder-change']);
 
-const defaultFolders = ref<Folder[]>(appConstants.DEFAULT_FOLDERS)
+const defaultFolders = computed(() => {
+
+    const defaultFoldersFromLocalStorage = localStorage.getItem(appConstants.DEFAULT_LOCAL_STORAGE_KEY);
+    if (defaultFoldersFromLocalStorage) {
+        return JSON.parse(defaultFoldersFromLocalStorage);
+    } else {
+        return appConstants.DEFAULT_FOLDERS;
+    }
+})
 
 const filteredFoldersNoDefault = computed(() => {
     return props.folders.filter((folder) => {
@@ -30,12 +38,6 @@ const filteredFoldersNoDefault = computed(() => {
     })
 })
 
-// watch(() => props.folders, (newVal: Folder[]) => {
-//     console.log('folders changed', newVal);
-//     if (newVal.length > 0) {
-//         defaultFolders.value[0].notes = newVal[0].notes;
-//     }
-// })
 </script>
 
 <template>
