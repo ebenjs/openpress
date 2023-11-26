@@ -14,18 +14,17 @@ import { useFolderStore } from '@/stores/folder';
 import type { FilterOptions, Folder, Note } from '@/types';
 
 const folderStore = useFolderStore();
-// const folders = ref<Folder[]>([])
 const foldersCopy = ref<Folder[]>(folderStore.folders)
-// const currentFolderId = ref(0)
-// const currentNote = ref<Note | null>(null)
 const datadataAccessLocalStorageImpl: DataAccess = new DataAccessLocalStorageImpl();
 
 const handleSearchTextChanged = (value: string) => {
+  foldersCopy.value = folderStore.folders;
+
   foldersCopy.value = folderStore.folders.map((folder: Folder) => {
     return {
       ...folder,
       notes: folder.notes.filter((note) => {
-        if (note.data.blocks.length === 0) return false
+        if (note.data.blocks.length === 0) return true
         return note.data.blocks[0].data.text.toLowerCase().includes(value.toLowerCase())
       }),
     }
@@ -39,6 +38,11 @@ const handleSelectedFolderChange = (folderId: number) => {
 }
 
 const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {
+
+  // reset the array to its original state
+
+  foldersCopy.value = folderStore.folders;
+
   foldersCopy.value = folderStore.folders.map((folder: Folder) => {
     return {
       ...folder,
@@ -53,10 +57,6 @@ const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {
       }),
     }
   })
-}
-
-const handleActiveNoteChanged = (note: Note) => {
-  folderStore.currentNote = note
 }
 
 const handleAddNote = () => {
@@ -94,7 +94,16 @@ const handleAddNote = () => {
 }
 
 const handleNoteEdited = (note: Note) => {
-  foldersCopy.value = foldersCopy.value.map((folder) => {
+  console.log('handle note edited', note);
+  console.log('folderStore.folders', folderStore.folders);
+  console.log('folderStore.currentFolderId', folderStore.currentFolderId);
+  console.log('foldersCopy.value', foldersCopy.value);
+  console.log('-----------------------------------------------------');
+
+
+
+
+  folderStore.folders = folderStore.folders.map((folder) => {
     if (folder.id === folderStore.currentFolderId) {
       return {
         ...folder,
@@ -111,8 +120,7 @@ const handleNoteEdited = (note: Note) => {
     }
   })
 
-  datadataAccessLocalStorageImpl.post<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY, foldersCopy.value).then(() => {
-    folderStore.folders = foldersCopy.value
+  datadataAccessLocalStorageImpl.post<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY, folderStore.folders).then(() => {
   }).catch((error) => {
     console.log(error)
   })
@@ -143,7 +151,7 @@ onMounted(() => {
             <ActionBar @search-text-changed="handleSearchTextChanged" @filter-options-changed="handleFilterOptionsChanged"
               @add-note="handleAddNote" />
             <NotesView v-if="foldersCopy[folderStore.currentFolderId]?.notes.length > 0"
-              :notes="foldersCopy[folderStore.currentFolderId]?.notes" @active-note-changed="handleActiveNoteChanged" />
+              :notes="foldersCopy[folderStore.currentFolderId]?.notes" />
             <p v-else class="px-3 py-2">No result</p>
           </div>
           <div v-else class="no-notes-wrapper d-flex flex-column justify-content-center align-items-center h-100">

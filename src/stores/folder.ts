@@ -7,7 +7,7 @@ export const useFolderStore = defineStore('folder', () => {
   const currentFolderId = ref(0)
   const currentNote = ref<Note | null>(null)
 
-  function changeCurrentSelectedNote(note: Note) {
+  function changeCurrentSelectedNote(note: Note | null) {
     currentNote.value = note
   }
 

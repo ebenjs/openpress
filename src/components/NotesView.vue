@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, type PropType, onMounted, watch } from 'vue';
+import { type PropType, onMounted } from 'vue';
 import useTextFormatter from '../utilities/text-formatter.vue';
 import useDateHelper from '../utilities/date-helper.vue';
 import type { Note } from '@/types';
+import { useFolderStore } from '@/stores/folder';
 
+const folderStore = useFolderStore();
 
 const props = defineProps({
     notes: {
@@ -12,12 +14,8 @@ const props = defineProps({
     },
 })
 
-const emit = defineEmits(['active-note-changed']);
-
 const { capitalizeFirstChar } = useTextFormatter();
 const { getCurrentDate } = useDateHelper();
-
-const activeNote = ref<Note | null>(null);
 
 const computeNoteTitle = (note: Note) => {
     // if note first block data is not empty, return it else return 'Untitled'
@@ -40,29 +38,25 @@ const computeNoteDescription = (note: Note) => {
 }
 
 const handleNoteClick = (note: Note) => {
-    activeNote.value = note;
-    emit('active-note-changed', note);
+    folderStore.currentNote = note;
+    folderStore.changeCurrentSelectedNote(note);
 }
 
 onMounted(() => {
     window.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
-            activeNote.value = null;
-            emit('active-note-changed', null);
+            console.log('esc pressed');
+
+            folderStore.changeCurrentSelectedNote(null);
         }
     });
-})
-
-watch(() => props.notes, (notes) => {
-    activeNote.value = notes[0];
-    emit('active-note-changed', notes[0]);
 })
 
 </script>
 
 <template>
     <div v-for="note in notes" :key="note.id">
-        <div :class="`item-content ${note === activeNote ? 'active' : ''}`" @click="handleNoteClick(note)">
+        <div :class="`item-content ${note === folderStore.currentNote ? 'active' : ''}`" @click="handleNoteClick(note)">
             <p class="item-title">{{ capitalizeFirstChar(computeNoteTitle(note)) }}</p>
             <p class="item-description">{{ computeNoteDescription(note) }}</p>
             <small class="item-meta">

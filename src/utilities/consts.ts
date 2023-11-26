@@ -1,5 +1,6 @@
 export const appConstants = {
   DEFAULT_LOCAL_STORAGE_KEY: 'openpress',
+  EDITOR_PLACEHOLDER: 'Let`s write an awesome story!',
   DEFAULT_FOLDERS: [
     {
       id: 0,
