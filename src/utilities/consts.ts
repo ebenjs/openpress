@@ -13,7 +13,7 @@ export const appConstants = {
     {
       id: 1,
       name: 'Starred',
-      icon: 'hotel_class',
+      icon: 'editor_choice',
       background: 'background-image: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);',
       isDefault: true,
       notes: []

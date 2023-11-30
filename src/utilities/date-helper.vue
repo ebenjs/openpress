@@ -1,9 +1,9 @@
 <script lang="ts">
-import moment from 'moment';
+import moment from 'moment'
 
 export default function () {
   const getCurrentDate = (format: string): string => {
-    return moment().format(format);
+    return moment().format(format)
   }
 
   return {
