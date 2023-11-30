@@ -125,6 +125,15 @@ onMounted(() => {
       foldersCopy.value = receivedFolders
     })
     .catch((error) => {
+      datadataAccessLocalStorageImpl
+        .post<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY, appConstants.DEFAULT_FOLDERS)
+        .then(() => {
+          folderStore.folders = appConstants.DEFAULT_FOLDERS
+          foldersCopy.value = appConstants.DEFAULT_FOLDERS
+        })
+        .catch((error) => {
+          console.log(error)
+        })
       console.log(error)
     })
 })
