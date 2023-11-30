@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, type PropType, watch, computed } from 'vue'
+import { type PropType, computed } from 'vue'
 import LogoView from './LogoView.vue'
 import FolderGroup from './folders-view/FolderGroup.vue'
 import type { Folder } from '@/types'
 import { generateUniqueId } from '@/utilities/helpers'
-import { appConstants } from '@/utilities/consts'
 
 const props = defineProps({
   // folders of Notes
@@ -22,20 +21,15 @@ const props = defineProps({
 
 const emit = defineEmits(['selected-folder-change'])
 
-const defaultFolders = computed(() => {
-  const defaultFoldersFromLocalStorage = localStorage.getItem(
-    appConstants.DEFAULT_LOCAL_STORAGE_KEY
-  )
-  if (defaultFoldersFromLocalStorage) {
-    return JSON.parse(defaultFoldersFromLocalStorage)
-  } else {
-    return appConstants.DEFAULT_FOLDERS
-  }
-})
-
 const filteredFoldersNoDefault = computed(() => {
   return props.folders.filter((folder) => {
     return !folder.isDefault
+  })
+})
+
+const filteredFoldersDefault = computed(() => {
+  return props.folders.filter((folder) => {
+    return folder.isDefault
   })
 })
 </script>
@@ -45,7 +39,7 @@ const filteredFoldersNoDefault = computed(() => {
     <LogoView />
     <div class="default-folder-group-wrapper">
       <FolderGroup
-        v-for="folder in defaultFolders"
+        v-for="folder in filteredFoldersDefault"
         :key="folder.id"
         :folder="folder"
         @click="$emit('selected-folder-change', folder.id)"

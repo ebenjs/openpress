@@ -111,7 +111,7 @@ const handleNoteEdited = (note: Note) => {
 
   datadataAccessLocalStorageImpl
     .post<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY, folderStore.folders)
-    .then(() => { })
+    .then(() => {})
     .catch((error) => {
       console.log(error)
     })
@@ -136,19 +136,32 @@ onMounted(() => {
     <div class="h-100 flex-grow-1">
       <div class="row h-100 g-0">
         <div class="col-lg-2 h-100 second-pane">
-          <FoldersView :folders="folderStore.folders" @selected-folder-change="handleSelectedFolderChange" />
+          <FoldersView
+            :folders="folderStore.folders"
+            @selected-folder-change="handleSelectedFolderChange"
+          />
         </div>
         <div class="col-lg-3 h-100 third-pane scroll-overflow">
           <div v-if="folderStore.folders[folderStore.currentFolderId]?.notes.length > 0">
-            <FolderBar :label="foldersCopy[folderStore.currentFolderId].name"
-              :total="foldersCopy[folderStore.currentFolderId]?.notes.length" />
-            <ActionBar @search-text-changed="handleSearchTextChanged" @filter-options-changed="handleFilterOptionsChanged"
-              @add-note="handleAddNote" />
-            <NotesView v-if="foldersCopy[folderStore.currentFolderId]?.notes.length > 0"
-              :notes="foldersCopy[folderStore.currentFolderId]?.notes" />
+            <FolderBar
+              :label="foldersCopy[folderStore.currentFolderId].name"
+              :total="foldersCopy[folderStore.currentFolderId]?.notes.length"
+            />
+            <ActionBar
+              @search-text-changed="handleSearchTextChanged"
+              @filter-options-changed="handleFilterOptionsChanged"
+              @add-note="handleAddNote"
+            />
+            <NotesView
+              v-if="foldersCopy[folderStore.currentFolderId]?.notes.length > 0"
+              :notes="foldersCopy[folderStore.currentFolderId]?.notes"
+            />
             <p v-else class="px-3 py-2">No result</p>
           </div>
-          <div v-else class="no-notes-wrapper d-flex flex-column justify-content-center align-items-center h-100">
+          <div
+            v-else
+            class="no-notes-wrapper d-flex flex-column justify-content-center align-items-center h-100"
+          >
             <span class="material-symbols-outlined text-center text-white" style="font-size: 100px">
               folder_open
             </span>
@@ -159,7 +172,11 @@ onMounted(() => {
           </div>
         </div>
         <div class="col-lg-7 h-100 fourth-pane">
-          <EditorView v-if="folderStore.currentNote" :note="folderStore.currentNote" @note-edited="handleNoteEdited" />
+          <EditorView
+            v-if="folderStore.currentNote"
+            :note="folderStore.currentNote"
+            @note-edited="handleNoteEdited"
+          />
           <NoNoteSelected v-else />
         </div>
       </div>

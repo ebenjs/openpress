@@ -37,6 +37,15 @@ body {
   }
 }
 
+.custom-button-small {
+  padding: 5px 10px;
+}
+
+.custom-button-x-small {
+  padding: 2px 5px;
+  border-radius: 8px;
+}
+
 .ce-toolbar__plus {
   // same as hover
   background-color: $accent-color-darken;
