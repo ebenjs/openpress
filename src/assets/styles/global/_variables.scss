@@ -3,6 +3,7 @@
 $default-font-family: 'Fira Sans', 'helvetica neue', arial, sans-serif;
 
 $default-box-padding: 10px;
+$default-radius: 10px;
 
 @mixin default-border-rigth {
   border-right: 1px solid;
@@ -12,4 +13,8 @@ $default-box-padding: 10px;
 @mixin default-border-left {
   border-left: 1px solid;
   border-left-color: $default-border-color;
+}
+
+@mixin default-box-shadow {
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
 }

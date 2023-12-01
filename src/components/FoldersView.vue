@@ -8,6 +8,7 @@ import { useFolderStore } from '@/stores/folder'
 import type { DataAccess } from '@/services/data-access'
 import { DataAccessLocalStorageImpl } from '@/services/data-access-localstorage-impl'
 import { appConstants } from '@/utilities/consts'
+import CustomDialog from '@/components/global/CustomDialog.vue'
 
 const folderStore = useFolderStore()
 const datadataAccessLocalStorageImpl: DataAccess = new DataAccessLocalStorageImpl()
@@ -29,6 +30,7 @@ const emit = defineEmits(['selected-folder-change'])
 
 const contextMenuWrapper = ref(null)
 const currentContextMenuFolder = ref<Folder | null>(null)
+const showDialog = ref(false)
 
 const filteredFoldersNoDefault = computed(() => {
   return props.folders.filter((folder) => {
@@ -52,9 +54,9 @@ const handleContextMenu = (event: MouseEvent, folder: Folder) => {
 
 const handleDeleteFolder = () => {
   contextMenuWrapper.value.style.display = 'none'
-  // delete folder
+
   folderStore.deleteFolder(currentContextMenuFolder.value!.id)
-  // update from local storage
+
   datadataAccessLocalStorageImpl
     .post(appConstants.DEFAULT_LOCAL_STORAGE_KEY, folderStore.folders)
     .then(() => {
@@ -63,12 +65,21 @@ const handleDeleteFolder = () => {
     .catch((error) => {
       console.log('Error while deleting folder', error)
     })
+    .finally(() => {
+      currentContextMenuFolder.value = null
+      showDialog.value = false
+    })
+}
+
+const handleDialogClose = () => {
+  showDialog.value = false
 }
 
 onMounted(() => {
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       contextMenuWrapper.value.style.display = 'none'
+      showDialog.value = false
     }
   })
 
@@ -80,6 +91,23 @@ onMounted(() => {
 
 <template>
   <div>
+    <CustomDialog v-if="showDialog" @close-dialog="handleDialogClose">
+      <template #header>
+        <span>Delete folder</span>
+      </template>
+      <template #body>
+        <span
+          >Are you sure you want to delete folder <em>{{ currentContextMenuFolder?.name }}</em
+          >? This folder contains <em>{{ currentContextMenuFolder?.notes.length }}</em> notes.
+        </span>
+      </template>
+      <template #footer>
+        <button class="custom-button custom-button-x-small d-flex" @click="handleDeleteFolder">
+          <span class="material-symbols-outlined">folder_delete</span>
+          Delete
+        </button>
+      </template>
+    </CustomDialog>
     <LogoView />
     <div class="default-folder-group-wrapper">
       <FolderGroup
@@ -94,7 +122,7 @@ onMounted(() => {
         <div class="context-menu-item">
           <span>Rename</span>
         </div>
-        <div class="context-menu-item" @click="handleDeleteFolder">
+        <div class="context-menu-item" @click="showDialog = true">
           <span>Delete</span>
         </div>
       </div>
