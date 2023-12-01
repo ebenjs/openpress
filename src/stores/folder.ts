@@ -23,6 +23,11 @@ export const useFolderStore = defineStore('folder', () => {
     folders.value[currentFolderId.value].notes.push(note)
   }
 
+  function deleteFolder(folderId: number | string) {
+    const index = folders.value.findIndex((folder) => folder.id === folderId)
+    folders.value.splice(index, 1)
+  }
+
   return {
     currentNote,
     changeCurrentSelectedNote,
@@ -30,6 +35,7 @@ export const useFolderStore = defineStore('folder', () => {
     currentFolderId,
     changeCurrentFolderId,
     addNewFolder,
-    addNewNoteToFolder
+    addNewNoteToFolder,
+    deleteFolder
   }
 })

@@ -4,7 +4,13 @@ import LogoView from './LogoView.vue'
 import FolderGroup from './folders-view/FolderGroup.vue'
 import type { Folder } from '@/types'
 import { generateUniqueId } from '@/utilities/helpers'
+import { useFolderStore } from '@/stores/folder'
+import type { DataAccess } from '@/services/data-access'
+import { DataAccessLocalStorageImpl } from '@/services/data-access-localstorage-impl'
+import { appConstants } from '@/utilities/consts'
 
+const folderStore = useFolderStore()
+const datadataAccessLocalStorageImpl: DataAccess = new DataAccessLocalStorageImpl()
 const props = defineProps({
   // folders of Notes
   folders: {
@@ -22,6 +28,7 @@ const props = defineProps({
 const emit = defineEmits(['selected-folder-change'])
 
 const contextMenuWrapper = ref(null)
+const currentContextMenuFolder = ref<Folder | null>(null)
 
 const filteredFoldersNoDefault = computed(() => {
   return props.folders.filter((folder) => {
@@ -35,11 +42,27 @@ const filteredFoldersDefault = computed(() => {
   })
 })
 
-const handleContextMenu = (event: MouseEvent) => {
+const handleContextMenu = (event: MouseEvent, folder: Folder) => {
   event.preventDefault()
+  currentContextMenuFolder.value = folder
   contextMenuWrapper.value.style.top = event.clientY + 'px'
   contextMenuWrapper.value.style.left = event.clientX + 'px'
   contextMenuWrapper.value.style.display = 'block'
+}
+
+const handleDeleteFolder = () => {
+  contextMenuWrapper.value.style.display = 'none'
+  // delete folder
+  folderStore.deleteFolder(currentContextMenuFolder.value!.id)
+  // update from local storage
+  datadataAccessLocalStorageImpl
+    .post(appConstants.DEFAULT_LOCAL_STORAGE_KEY, folderStore.folders)
+    .then(() => {
+      console.log('Folder deleted successfully')
+    })
+    .catch((error) => {
+      console.log('Error while deleting folder', error)
+    })
 }
 
 onMounted(() => {
@@ -71,7 +94,7 @@ onMounted(() => {
         <div class="context-menu-item">
           <span>Rename</span>
         </div>
-        <div class="context-menu-item">
+        <div class="context-menu-item" @click="handleDeleteFolder">
           <span>Delete</span>
         </div>
       </div>
@@ -80,7 +103,7 @@ onMounted(() => {
       v-for="folder in filteredFoldersNoDefault"
       :key="folder.id"
       :folder="folder"
-      @context-menu="handleContextMenu"
+      @context-menu="handleContextMenu($event, folder)"
     />
   </div>
 </template>
