@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Folder } from '@/types'
-import { type PropType } from 'vue'
+import { ref, type PropType } from 'vue'
 import { useFolderStore } from '@/stores/folder'
 
 const folderStore = useFolderStore()
@@ -10,10 +10,28 @@ const props = defineProps({
     required: true
   }
 })
+
+const emit = defineEmits(['context-menu'])
+
+const applyCorrectClass = (folder: Folder) => {
+  let finalClass = 'folder-group'
+  if (folder.id === folderStore.currentFolderId) {
+    finalClass += ' active'
+  }
+  if (!folder.isDefault) {
+    finalClass += ' not-default-folder'
+  }
+  return finalClass
+}
+
+const handleContextMenu = (event: MouseEvent) => {
+  event.preventDefault()
+  emit('context-menu', event)
+}
 </script>
 
 <template>
-  <div :class="`folder-group ${folder.id === folderStore.currentFolderId ? 'active' : ''}`">
+  <div :class="applyCorrectClass(folder)" @contextmenu.prevent="handleContextMenu">
     <div class="folder-group-header d-flex align-items-center">
       <span
         class="folder-icon material-symbols-outlined"
@@ -26,7 +44,7 @@ const props = defineProps({
       >
         {{ folder.icon ?? 'folder' }}
       </span>
-      <span class="folder-group-name w-100 d-flex align-items-center">
+      <span class="folder-group-content w-100 d-flex align-items-center">
         <span>
           {{ folder.name }}
         </span>
@@ -36,6 +54,11 @@ const props = defineProps({
         >
           {{ folder.notes.length }}
         </span>
+        <!-- edit and delete icons -->
+        <div v-if="!folder.isDefault" class="folder-actions ms-auto">
+          <span class="material-symbols-outlined edit">edit_square</span>
+          <span class="material-symbols-outlined remove ms-2">cancel</span>
+        </div>
       </span>
     </div>
   </div>
@@ -48,23 +71,26 @@ const props = defineProps({
 
   &:hover {
     background-color: $hover-color-primary;
+
+    .folder-actions {
+      display: block;
+    }
   }
 
   .folder-group-header {
     @include small;
-
-    .folder-icon {
-    }
-
-    .folder-group-name {
-      padding-top: 4px;
-    }
   }
 
-  .folder-group-name {
+  .folder-group-content {
     padding-left: 10px;
     color: $white;
     @include small;
+  }
+}
+
+.not-default-folder {
+  .folder-group-content {
+    min-height: 30px;
   }
 }
 
@@ -72,8 +98,24 @@ const props = defineProps({
   background-color: $hover-color-primary;
   border-left-color: $accent-color;
 
-  .folder-group-name {
+  .folder-group-content {
     color: $accent-color;
+  }
+}
+
+.folder-actions {
+  display: none;
+
+  .material-symbols-outlined {
+    @include large;
+  }
+
+  .edit {
+    color: $accent-color;
+  }
+
+  .remove {
+    color: $danger-color-1;
   }
 }
 </style>
