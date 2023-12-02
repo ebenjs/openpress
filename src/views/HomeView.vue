@@ -32,9 +32,8 @@ const handleSearchTextChanged = (value: string) => {
 }
 
 const handleSelectedFolderChange = (folderId: DefaultFoldersIds) => {
-  folderStore.currentFolderId = folderId
+  folderStore.changeCurrentFolderId(folderId)
   handleFilterOptionsChanged({ read: true, unread: true })
-  folderStore.currentNote = null
 }
 
 const handleFilterOptionsChanged = (filterOptions: FilterOptions) => {

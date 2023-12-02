@@ -51,8 +51,9 @@ const computeNoteClasses = (note: Note) => {
 }
 
 const handleNoteClick = (note: Note) => {
-  folderStore.currentNote = note
   folderStore.changeCurrentSelectedNote(note)
+  note.isRead = true
+  folderStore.updateLocalStorage()
 }
 
 const archiveNote = (note: Note) => {
