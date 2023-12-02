@@ -4,12 +4,17 @@ import { ref } from 'vue'
 import { DataAccessLocalStorageImpl } from '@/services/data-access-localstorage-impl'
 import type { DataAccess } from '@/services/data-access'
 import { appConstants } from '@/utilities/consts'
+import { DefaultFoldersIds } from '@/utilities/consts'
 
 const datadataAccessLocalStorageImpl: DataAccess = new DataAccessLocalStorageImpl()
 export const useFolderStore = defineStore('folder', () => {
   const folders = ref<Folder[]>([])
-  const currentFolderId = ref(0)
+  const currentFolderId: DefaultFoldersIds | number | string = ref(0)
   const currentNote = ref<Note | null>(null)
+
+  function getCurrentFolder(): Folder {
+    return folders.value[currentFolderId.value]
+  }
 
   function changeCurrentSelectedNote(note: Note | null) {
     currentNote.value = note
@@ -23,8 +28,13 @@ export const useFolderStore = defineStore('folder', () => {
     folders.value.push(folder)
   }
 
-  function addNewNoteToFolder(note: Note) {
+  function addNewNoteToCurrentFolder(note: Note) {
     folders.value[currentFolderId.value].notes.push(note)
+  }
+
+  function addNewNoteToFolder(folderId: number | string, note: Note) {
+    const index = folders.value.findIndex((folder) => folder.id === folderId)
+    folders.value[index].notes.push(note)
   }
 
   function deleteFolder(folderId: number | string) {
@@ -42,8 +52,19 @@ export const useFolderStore = defineStore('folder', () => {
     }
   }
 
+  function deleteNoteFromFolder(folderId: number | string, noteId: number | string): boolean {
+    try {
+      const folderIndex = folders.value.findIndex((folder) => folder.id === folderId)
+      const noteIndex = folders.value[folderIndex].notes.findIndex((note) => note.id === noteId)
+      folders.value[folderIndex].notes.splice(noteIndex, 1)
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
   function addNoteToArchiveFolder(note: Note) {
-    folders.value[2].notes.push(note)
+    folders.value[DefaultFoldersIds.archiveFolderId].notes.push(note)
   }
 
   function updateLocalStorage() {
@@ -65,9 +86,12 @@ export const useFolderStore = defineStore('folder', () => {
     currentFolderId,
     changeCurrentFolderId,
     addNewFolder,
+    addNewNoteToCurrentFolder,
     addNewNoteToFolder,
     deleteFolder,
     deleteNoteFromCurrentFolder,
-    addNoteToArchiveFolder
+    addNoteToArchiveFolder,
+    deleteNoteFromFolder,
+    getCurrentFolder
   }
 })

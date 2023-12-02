@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const emit = defineEmits(['close-dialog'])
+defineEmits(['close-dialog'])
 </script>
 
 <template>

@@ -1,9 +1,17 @@
+export const enum DefaultFoldersIds {
+  allNotesFolderId,
+  starredFolderId,
+  archiveFolderId,
+  trashFolderId,
+  sharedFolderId
+}
+
 export const appConstants = {
   DEFAULT_LOCAL_STORAGE_KEY: 'openpress',
   EDITOR_PLACEHOLDER: 'Let`s write an awesome story!',
   DEFAULT_FOLDERS: [
     {
-      id: 0,
+      id: DefaultFoldersIds.allNotesFolderId,
       name: 'All notes',
       icon: 'description',
       background: 'background-image: linear-gradient(to top, #0ba360 0%, #3cba92 100%);',
@@ -11,7 +19,7 @@ export const appConstants = {
       notes: []
     },
     {
-      id: 1,
+      id: DefaultFoldersIds.starredFolderId,
       name: 'Starred',
       icon: 'editor_choice',
       background: 'background-image: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);',
@@ -19,7 +27,7 @@ export const appConstants = {
       notes: []
     },
     {
-      id: 2,
+      id: DefaultFoldersIds.archiveFolderId,
       name: 'Archived',
       icon: 'archive',
       background: 'background-image: linear-gradient(to top, #9890e3 0%, #b1f4cf 100%);',
@@ -27,7 +35,7 @@ export const appConstants = {
       notes: []
     },
     {
-      id: 3,
+      id: DefaultFoldersIds.trashFolderId,
       name: 'Trash',
       icon: 'recycling',
       background:
@@ -36,7 +44,7 @@ export const appConstants = {
       notes: []
     },
     {
-      id: 4,
+      id: DefaultFoldersIds.sharedFolderId,
       name: 'Shared',
       icon: 'folder_shared',
       background: 'background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);',

@@ -26,7 +26,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['selected-folder-change'])
+defineEmits(['selected-folder-change'])
 
 const contextMenuWrapper = ref(null)
 const currentContextMenuFolder = ref<Folder | null>(null)

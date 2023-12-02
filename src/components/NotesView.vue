@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import { type PropType, onMounted } from 'vue'
+import { type PropType, onMounted, computed } from 'vue'
 import useTextFormatter from '../utilities/text-formatter.vue'
 import useDateHelper from '../utilities/date-helper.vue'
 import type { Note } from '@/types'
 import { useFolderStore } from '@/stores/folder'
+import { DefaultFoldersIds } from '@/utilities/consts'
 
 const folderStore = useFolderStore()
 
-const props = defineProps({
+defineProps({
   notes: {
     type: Array as PropType<Note[]>,
     required: true
   }
 })
 
+const emit = defineEmits(['folder-store-updated'])
+
 const { capitalizeFirstChar } = useTextFormatter()
 const { getCurrentDate } = useDateHelper()
 
+const isArchived = computed(() => {
+  return folderStore.getCurrentFolder().id === DefaultFoldersIds.archiveFolderId
+})
+
 const computeNoteTitle = (note: Note) => {
-  // if note first block data is not empty, return it else return 'Untitled'
   if (note.data.blocks.length > 0) {
     if (note.data.blocks[0].data.text !== '') {
       return note.data.blocks[0].data.text
@@ -28,7 +34,6 @@ const computeNoteTitle = (note: Note) => {
 }
 
 const computeNoteDescription = (note: Note) => {
-  // if note block exist and is text based(p or h), return it else return 'No description'
   if (note.data.blocks.length > 1) {
     if (note.data.blocks[1].type === 'paragraph' || note.data.blocks[1].type === 'header') {
       return note.data.blocks[1].data.text
@@ -54,14 +59,21 @@ const archiveNote = (note: Note) => {
   if (folderStore.deleteNoteFromCurrentFolder(note.id)) {
     folderStore.addNoteToArchiveFolder(note)
     folderStore.updateLocalStorage()
+    emit('folder-store-updated')
+  }
+}
+
+const unArchiveNote = (note: Note) => {
+  if (folderStore.deleteNoteFromCurrentFolder(note.id)) {
+    folderStore.addNewNoteToFolder(DefaultFoldersIds.allNotesFolderId, note)
+    folderStore.updateLocalStorage()
+    emit('folder-store-updated')
   }
 }
 
 onMounted(() => {
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-      console.log('esc pressed')
-
       folderStore.changeCurrentSelectedNote(null)
     }
   })
@@ -88,8 +100,18 @@ onMounted(() => {
         <div class="d-flex align-items-center justify-content-center">
           <!-- <span class="material-symbols-outlined share">ios_share</span> -->
           <span class="material-symbols-outlined star ms-2">editor_choice</span>
-          <span @click="archiveNote(note)" class="material-symbols-outlined archive ms-2"
+          <span
+            v-if="!isArchived"
+            @click.stop="archiveNote(note)"
+            class="material-symbols-outlined archive ms-2"
             >archive</span
+          >
+
+          <span
+            v-else
+            @click.stop="unArchiveNote(note)"
+            class="material-symbols-outlined archive ms-2"
+            >unarchive</span
           >
           <span class="material-symbols-outlined remove ms-2">delete</span>
         </div>

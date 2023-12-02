@@ -4,7 +4,7 @@ import { type PropType } from 'vue'
 import { useFolderStore } from '@/stores/folder'
 
 const folderStore = useFolderStore()
-const props = defineProps({
+defineProps({
   folder: {
     type: Object as PropType<Folder>,
     required: true
