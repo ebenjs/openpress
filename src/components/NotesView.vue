@@ -37,9 +37,24 @@ const computeNoteDescription = (note: Note) => {
   return 'No description'
 }
 
+const computeNoteClasses = (note: Note) => {
+  let finalClass = 'item-content d-flex'
+  if (note === folderStore.currentNote) {
+    finalClass += ' active'
+  }
+  return finalClass
+}
+
 const handleNoteClick = (note: Note) => {
   folderStore.currentNote = note
   folderStore.changeCurrentSelectedNote(note)
+}
+
+const archiveNote = (note: Note) => {
+  if (folderStore.deleteNoteFromCurrentFolder(note.id)) {
+    folderStore.addNoteToArchiveFolder(note)
+    folderStore.updateLocalStorage()
+  }
 }
 
 onMounted(() => {
@@ -55,20 +70,30 @@ onMounted(() => {
 
 <template>
   <div v-for="note in notes" :key="note.id">
-    <div
-      :class="`item-content ${note === folderStore.currentNote ? 'active' : ''}`"
-      @click="handleNoteClick(note)"
-    >
-      <p class="item-title">{{ capitalizeFirstChar(computeNoteTitle(note)) }}</p>
-      <p class="item-description">{{ computeNoteDescription(note) }}</p>
-      <small class="item-meta">
-        <span class="item-meta-item d-flex align-items-center pt-2">
-          <span class="author-picture">
-            <img src="https://picsum.photos/200" alt="avatar" />
+    <div :class="computeNoteClasses(note)" @click="handleNoteClick(note)">
+      <div>
+        <p class="item-title">{{ capitalizeFirstChar(computeNoteTitle(note)) }}</p>
+        <p class="item-description">{{ computeNoteDescription(note) }}</p>
+        <small class="item-meta">
+          <span class="item-meta-item d-flex align-items-center pt-2">
+            <span class="author-picture">
+              <img src="https://picsum.photos/200" alt="avatar" />
+            </span>
+            <span class="ms-1">By : ebenjs on {{ getCurrentDate('DD/MM/YYYY') }}</span>
           </span>
-          <span class="ms-1">By : ebenjs on {{ getCurrentDate('DD/MM/YYYY') }}</span>
-        </span>
-      </small>
+        </small>
+      </div>
+      <!-- edit and delete icons -->
+      <div class="folder-actions">
+        <div class="d-flex align-items-center justify-content-center">
+          <!-- <span class="material-symbols-outlined share">ios_share</span> -->
+          <span class="material-symbols-outlined star ms-2">editor_choice</span>
+          <span @click="archiveNote(note)" class="material-symbols-outlined archive ms-2"
+            >archive</span
+          >
+          <span class="material-symbols-outlined remove ms-2">delete</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -82,8 +107,28 @@ $padding: 15px;
   border-left: solid 4px transparent;
   cursor: pointer;
 
+  .folder-actions {
+    padding: calc($default-box-padding/1.5) calc($default-box-padding);
+    border-radius: calc($default-radius * 2);
+    display: none !important;
+    position: absolute;
+    margin-left: 14.8%;
+    background-color: $primary-color;
+    // background-color: $accent-color;
+    // color: $primary-color;
+    @include highlight-box-shadow;
+
+    .material-symbols-outlined {
+      @include icons-small;
+    }
+  }
+
   &:hover {
     background-color: $hover-color-primary;
+
+    .folder-actions {
+      display: flex !important;
+    }
   }
 
   p {

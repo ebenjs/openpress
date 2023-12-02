@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Folder } from '@/types'
-import { ref, type PropType } from 'vue'
+import { type PropType } from 'vue'
 import { useFolderStore } from '@/stores/folder'
 
 const folderStore = useFolderStore()
@@ -54,11 +54,6 @@ const handleContextMenu = (event: MouseEvent) => {
         >
           {{ folder.notes.length }}
         </span>
-        <!-- edit and delete icons -->
-        <div v-if="!folder.isDefault" class="folder-actions ms-auto">
-          <span class="material-symbols-outlined edit">edit_square</span>
-          <span class="material-symbols-outlined remove ms-2">cancel</span>
-        </div>
       </span>
     </div>
   </div>
@@ -71,10 +66,6 @@ const handleContextMenu = (event: MouseEvent) => {
 
   &:hover {
     background-color: $hover-color-primary;
-
-    .folder-actions {
-      display: block;
-    }
   }
 
   .folder-group-header {
@@ -88,34 +79,12 @@ const handleContextMenu = (event: MouseEvent) => {
   }
 }
 
-.not-default-folder {
-  .folder-group-content {
-    min-height: 30px;
-  }
-}
-
 .active {
   background-color: $hover-color-primary;
   border-left-color: $accent-color;
 
   .folder-group-content {
     color: $accent-color;
-  }
-}
-
-.folder-actions {
-  display: none;
-
-  .material-symbols-outlined {
-    @include large;
-  }
-
-  .edit {
-    color: $accent-color;
-  }
-
-  .remove {
-    color: $danger-color-1;
   }
 }
 </style>
