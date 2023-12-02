@@ -5,6 +5,7 @@ interface Note {
   data: OutputData
   createdAt: string
   isRead?: boolean
+  isStarred?: boolean
 }
 
 interface EditorOutputFormat {

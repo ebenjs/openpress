@@ -72,6 +72,15 @@ const unArchiveNote = (note: Note) => {
   }
 }
 
+const starNote = (note: Note) => {
+  console.log('star note')
+
+  note.isStarred = !note.isStarred
+  folderStore.updateLocalStorage()
+  emit('folder-store-updated')
+  console.log('star note', note.isStarred)
+}
+
 onMounted(() => {
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
@@ -96,24 +105,30 @@ onMounted(() => {
           </span>
         </small>
       </div>
-      <!-- edit and delete icons -->
+
+      <div class="note-indicators ms-auto">
+        <span v-if="note.isStarred" class="material-symbols-outlined">editor_choice</span>
+      </div>
+
       <div class="folder-actions">
         <div class="d-flex align-items-center justify-content-center">
-          <!-- <span class="material-symbols-outlined share">ios_share</span> -->
-          <span class="material-symbols-outlined star ms-2">editor_choice</span>
+          <span class="material-symbols-outlined star ms-2" @click.stop="starNote(note)"
+            >editor_choice</span
+          >
+
           <span
             v-if="!isArchived"
             @click.stop="archiveNote(note)"
             class="material-symbols-outlined archive ms-2"
             >archive</span
           >
-
           <span
             v-else
             @click.stop="unArchiveNote(note)"
             class="material-symbols-outlined archive ms-2"
             >unarchive</span
           >
+
           <span class="material-symbols-outlined remove ms-2">delete</span>
         </div>
       </div>

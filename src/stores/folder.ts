@@ -16,6 +16,10 @@ export const useFolderStore = defineStore('folder', () => {
     return folders.value[currentFolderId.value]
   }
 
+  function getStarredNotes(): Note[] {
+    return folders.value[DefaultFoldersIds.allNotesFolderId].notes.filter((note) => note.isStarred)
+  }
+
   function changeCurrentSelectedNote(note: Note | null) {
     currentNote.value = note
   }
@@ -79,6 +83,7 @@ export const useFolderStore = defineStore('folder', () => {
   }
 
   return {
+    getStarredNotes,
     updateLocalStorage,
     currentNote,
     changeCurrentSelectedNote,

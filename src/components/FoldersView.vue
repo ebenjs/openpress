@@ -7,7 +7,7 @@ import { generateUniqueId } from '@/utilities/helpers'
 import { useFolderStore } from '@/stores/folder'
 import type { DataAccess } from '@/services/data-access'
 import { DataAccessLocalStorageImpl } from '@/services/data-access-localstorage-impl'
-import { appConstants } from '@/utilities/consts'
+import { DefaultFoldersIds, appConstants } from '@/utilities/consts'
 import CustomDialog from '@/components/global/CustomDialog.vue'
 
 const folderStore = useFolderStore()
@@ -40,7 +40,12 @@ const filteredFoldersNoDefault = computed(() => {
 
 const filteredFoldersDefault = computed(() => {
   return props.folders.filter((folder) => {
-    return folder.isDefault
+    if (folder.isDefault) {
+      if (folder.id === DefaultFoldersIds.starredFolderId) {
+        folder.notes = folderStore.getStarredNotes()
+      }
+      return true
+    }
   })
 })
 
