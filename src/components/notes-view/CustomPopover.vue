@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps({
+defineProps({
   minWidth: {
     type: Number,
     default: 150
@@ -23,11 +23,10 @@ const props = defineProps({
 .custom-popover {
   position: absolute;
   z-index: 1000;
-
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
   background-color: $quaternary-color;
   border-radius: 10px;
   border: none;
+  @include default-box-shadow;
 
   .custom-popover-body {
     background-color: $quaternary-color;

@@ -38,3 +38,9 @@
 @mixin bold {
   font-weight: 700;
 }
+
+@mixin icons-small {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 20px;
+}

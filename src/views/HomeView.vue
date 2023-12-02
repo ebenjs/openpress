@@ -8,7 +8,7 @@ import EditorView from '@/components/EditorView.vue'
 import NoNoteSelected from '@/components/notes-view/NoNoteSelected.vue'
 import { DataAccessLocalStorageImpl } from '@/services/data-access-localstorage-impl'
 import { type DataAccess } from '@/services/data-access'
-import { appConstants } from '@/utilities/consts'
+import { DefaultFoldersIds, appConstants } from '@/utilities/consts'
 import { generateUniqueId } from '@/utilities/helpers'
 import { useFolderStore } from '@/stores/folder'
 import type { FilterOptions, Folder, Note } from '@/types'
@@ -31,7 +31,7 @@ const handleSearchTextChanged = (value: string) => {
   })
 }
 
-const handleSelectedFolderChange = (folderId: number) => {
+const handleSelectedFolderChange = (folderId: DefaultFoldersIds) => {
   folderStore.currentFolderId = folderId
   handleFilterOptionsChanged({ read: true, unread: true })
   folderStore.currentNote = null
@@ -117,6 +117,10 @@ const handleNoteEdited = (note: Note) => {
     })
 }
 
+const updateFoldersCopy = () => {
+  foldersCopy.value = folderStore.folders
+}
+
 onMounted(() => {
   datadataAccessLocalStorageImpl
     .get<Folder[]>(appConstants.DEFAULT_LOCAL_STORAGE_KEY)
@@ -164,6 +168,7 @@ onMounted(() => {
             <NotesView
               v-if="foldersCopy[folderStore.currentFolderId]?.notes.length > 0"
               :notes="foldersCopy[folderStore.currentFolderId]?.notes"
+              @folder-store-updated="updateFoldersCopy"
             />
             <p v-else class="px-3 py-2">No result</p>
           </div>

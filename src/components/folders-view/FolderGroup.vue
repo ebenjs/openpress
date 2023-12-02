@@ -4,16 +4,34 @@ import { type PropType } from 'vue'
 import { useFolderStore } from '@/stores/folder'
 
 const folderStore = useFolderStore()
-const props = defineProps({
+defineProps({
   folder: {
     type: Object as PropType<Folder>,
     required: true
   }
 })
+
+const emit = defineEmits(['context-menu'])
+
+const applyCorrectClass = (folder: Folder) => {
+  let finalClass = 'folder-group'
+  if (folder.id === folderStore.currentFolderId) {
+    finalClass += ' active'
+  }
+  if (!folder.isDefault) {
+    finalClass += ' not-default-folder'
+  }
+  return finalClass
+}
+
+const handleContextMenu = (event: MouseEvent) => {
+  event.preventDefault()
+  emit('context-menu', event)
+}
 </script>
 
 <template>
-  <div :class="`folder-group ${folder.id === folderStore.currentFolderId ? 'active' : ''}`">
+  <div :class="applyCorrectClass(folder)" @contextmenu.prevent="handleContextMenu">
     <div class="folder-group-header d-flex align-items-center">
       <span
         class="folder-icon material-symbols-outlined"
@@ -26,7 +44,7 @@ const props = defineProps({
       >
         {{ folder.icon ?? 'folder' }}
       </span>
-      <span class="folder-group-name w-100 d-flex align-items-center">
+      <span class="folder-group-content w-100 d-flex align-items-center">
         <span>
           {{ folder.name }}
         </span>
@@ -52,16 +70,9 @@ const props = defineProps({
 
   .folder-group-header {
     @include small;
-
-    .folder-icon {
-    }
-
-    .folder-group-name {
-      padding-top: 4px;
-    }
   }
 
-  .folder-group-name {
+  .folder-group-content {
     padding-left: 10px;
     color: $white;
     @include small;
@@ -72,7 +83,7 @@ const props = defineProps({
   background-color: $hover-color-primary;
   border-left-color: $accent-color;
 
-  .folder-group-name {
+  .folder-group-content {
     color: $accent-color;
   }
 }
