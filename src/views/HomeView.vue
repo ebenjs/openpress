@@ -12,6 +12,7 @@ import { DefaultFoldersIds, appConstants } from '@/utilities/consts'
 import { generateUniqueId } from '@/utilities/helpers'
 import { useFolderStore } from '@/stores/folder'
 import type { FilterOptions, Folder, Note } from '@/types'
+import moment from 'moment'
 
 const folderStore = useFolderStore()
 const foldersCopy = ref<Folder[]>(folderStore.folders)
@@ -62,7 +63,7 @@ const handleAddNote = () => {
       blocks: []
     },
     isRead: false,
-    createdAt: '2021-08-01T00:00:00.000Z'
+    createdAt: moment()
   }
 
   if (!(foldersCopy.value.length > 0)) {

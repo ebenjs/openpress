@@ -18,7 +18,7 @@ defineProps({
 const emit = defineEmits(['folder-store-updated'])
 
 const { capitalizeFirstChar } = useTextFormatter()
-const { getCurrentDate } = useDateHelper()
+const { formatDate } = useDateHelper()
 
 const isArchived = computed(() => {
   return folderStore.getCurrentFolder().id === DefaultFoldersIds.archiveFolderId
@@ -73,12 +73,9 @@ const unArchiveNote = (note: Note) => {
 }
 
 const starNote = (note: Note) => {
-  console.log('star note')
-
   note.isStarred = !note.isStarred
   folderStore.updateLocalStorage()
   emit('folder-store-updated')
-  console.log('star note', note.isStarred)
 }
 
 onMounted(() => {
@@ -101,7 +98,9 @@ onMounted(() => {
             <span class="author-picture">
               <img src="https://picsum.photos/200" alt="avatar" />
             </span>
-            <span class="ms-1">By : ebenjs on {{ getCurrentDate('DD/MM/YYYY') }}</span>
+            <span class="ms-1"
+              >By : ebenjs on {{ formatDate(note.createdAt, 'DD-MM-YYYY HH:mm:ss') }}</span
+            >
           </span>
         </small>
       </div>

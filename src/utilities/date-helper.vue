@@ -6,8 +6,13 @@ export default function () {
     return moment().format(format)
   }
 
+  const formatDate = (date: string, format: string): string => {
+    return moment(date).format(format)
+  }
+
   return {
-    getCurrentDate
+    getCurrentDate,
+    formatDate
   }
 }
 </script>
