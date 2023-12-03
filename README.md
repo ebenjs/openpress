@@ -2,6 +2,11 @@
 
 OpenPress is a web application designed to enhance note-taking and article writing experiences. With a user-friendly interface and powerful features, OpenPress aims to provide a seamless platform for users to organize their thoughts, create detailed notes, and write compelling articles.
 
+## Screenshot
+
+<img src="./public/screenshot.png"
+style="border-radius:5px" alt="screenshot"/>
+
 ## Key Features
 
 - **Intuitive Note Taking**: OpenPress offers a simple and intuitive note-taking interface, allowing users to quickly jot down their ideas and thoughts.
