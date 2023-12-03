@@ -18,7 +18,7 @@ defineProps({
 const emit = defineEmits(['folder-store-updated'])
 
 const { capitalizeFirstChar } = useTextFormatter()
-const { getCurrentDate } = useDateHelper()
+const { formatDate } = useDateHelper()
 
 const isArchived = computed(() => {
   return folderStore.getCurrentFolder().id === DefaultFoldersIds.archiveFolderId
@@ -51,8 +51,9 @@ const computeNoteClasses = (note: Note) => {
 }
 
 const handleNoteClick = (note: Note) => {
-  folderStore.currentNote = note
   folderStore.changeCurrentSelectedNote(note)
+  note.isRead = true
+  folderStore.updateLocalStorage()
 }
 
 const archiveNote = (note: Note) => {
@@ -69,6 +70,12 @@ const unArchiveNote = (note: Note) => {
     folderStore.updateLocalStorage()
     emit('folder-store-updated')
   }
+}
+
+const starNote = (note: Note) => {
+  note.isStarred = !note.isStarred
+  folderStore.updateLocalStorage()
+  emit('folder-store-updated')
 }
 
 onMounted(() => {
@@ -91,28 +98,36 @@ onMounted(() => {
             <span class="author-picture">
               <img src="https://picsum.photos/200" alt="avatar" />
             </span>
-            <span class="ms-1">By : ebenjs on {{ getCurrentDate('DD/MM/YYYY') }}</span>
+            <span class="ms-1"
+              >By : ebenjs on {{ formatDate(note.createdAt, 'DD-MM-YYYY HH:mm:ss') }}</span
+            >
           </span>
         </small>
       </div>
-      <!-- edit and delete icons -->
+
+      <div class="note-indicators ms-auto">
+        <span v-if="note.isStarred" class="material-symbols-outlined">editor_choice</span>
+      </div>
+
       <div class="folder-actions">
         <div class="d-flex align-items-center justify-content-center">
-          <!-- <span class="material-symbols-outlined share">ios_share</span> -->
-          <span class="material-symbols-outlined star ms-2">editor_choice</span>
+          <span class="material-symbols-outlined star ms-2" @click.stop="starNote(note)"
+            >editor_choice</span
+          >
+
           <span
             v-if="!isArchived"
             @click.stop="archiveNote(note)"
             class="material-symbols-outlined archive ms-2"
             >archive</span
           >
-
           <span
             v-else
             @click.stop="unArchiveNote(note)"
             class="material-symbols-outlined archive ms-2"
             >unarchive</span
           >
+
           <span class="material-symbols-outlined remove ms-2">delete</span>
         </div>
       </div>

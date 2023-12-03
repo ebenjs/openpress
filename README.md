@@ -1,5 +1,42 @@
 # OpenPress
 
+OpenPress is a web application designed to enhance note-taking and article writing experiences. With a user-friendly interface and powerful features, OpenPress aims to provide a seamless platform for users to organize their thoughts, create detailed notes, and write compelling articles.
+
+## Screenshot
+
+<img src="./public/screenshot.png"
+style="border-radius:5px" alt="screenshot"/>
+
+## Key Features
+
+- **Intuitive Note Taking**: OpenPress offers a simple and intuitive note-taking interface, allowing users to quickly jot down their ideas and thoughts.
+- **Rich Text Editing**: With OpenPress, users can format their notes and articles using a variety of styling options, including bold, italic, headings, lists, and more.
+- **Collaboration**: OpenPress supports collaboration, enabling multiple users to work together on the same document in real-time, making it ideal for team projects or group discussions.
+- **Tagging and Categorization**: Users can easily organize their notes and articles by assigning tags and categories, making it effortless to find and retrieve information later.
+
+## Getting Started
+
+To start using OpenPress, follow these steps:
+
+1. Install the necessary dependencies by running `npm install` in the project directory.
+2. Launch the development server by running `npm run dev`.
+3. Access OpenPress in your web browser at `http://localhost:5173`.
+
+For more information and customization options, refer to the [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Requirements
+
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+
+## Contributing
+
+We welcome contributions from the community! If you'd like to contribute to OpenPress, please refer to our [contribution guidelines](CONTRIBUTING.md) for more information.
+
+## License
+
+OpenPress is released under the [MIT License](LICENSE).
+
 This template should help get you started developing with Vue 3 in Vite.
 
 ## Recommended IDE Setup
@@ -13,8 +50,8 @@ TypeScript cannot handle type information for `.vue` imports by default, so we r
 If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
 
 1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
+   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
+   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
 2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
 
 ## Customize configuration
@@ -50,4 +87,3 @@ npm run test:unit
 ```sh
 npm run lint
 ```
-# openpress
