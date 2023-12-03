@@ -1,4 +1,6 @@
 # OpenPress
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Febenjs%2Fopenpress.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Febenjs%2Fopenpress?ref=badge_shield)
+
 
 This template should help get you started developing with Vue 3 in Vite.
 
@@ -51,3 +53,7 @@ npm run test:unit
 npm run lint
 ```
 # openpress
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Febenjs%2Fopenpress.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Febenjs%2Fopenpress?ref=badge_large)
