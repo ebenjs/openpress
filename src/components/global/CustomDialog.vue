@@ -6,7 +6,12 @@ defineEmits(['close-dialog'])
   <div class="custom-dialog">
     <div class="custom-dialog-header">
       <slot name="header"></slot>
-      <span class="material-symbols-outlined close ms-auto" data-test="close" @click="$emit('close-dialog')">cancel</span>
+      <span
+        class="material-symbols-outlined close ms-auto"
+        data-test="close"
+        @click="$emit('close-dialog')"
+        >cancel</span
+      >
     </div>
     <div class="custom-dialog-body" data-test="body-slot">
       <slot name="body"></slot>
