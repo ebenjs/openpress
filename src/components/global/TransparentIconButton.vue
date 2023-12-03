@@ -16,8 +16,8 @@ defineProps({
 </script>
 
 <template>
-  <button class="transparent-icon-button" :style="{ width, height }">
-    <span class="material-symbols-outlined">
+  <button class="transparent-icon-button" :style="{ width, height }" data-test="button">
+    <span class="material-symbols-outlined" data-test="icon">
       {{ icon }}
     </span>
   </button>
