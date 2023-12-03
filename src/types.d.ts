@@ -3,8 +3,9 @@ import type { OutputData } from '@editorjs/editorjs'
 interface Note {
   id: number | string
   data: OutputData
-  createdAt: string
+  createdAt: Moment
   isRead?: boolean
+  isStarred?: boolean
 }
 
 interface EditorOutputFormat {
