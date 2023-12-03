@@ -145,7 +145,7 @@ onMounted(() => {
 
 <template>
   <div class="d-flex h-100">
-    <div class="h-100 first-pane">Hi</div>
+    <div class="h-100 first-pane"></div>
     <div class="h-100 flex-grow-1">
       <div class="row h-100 g-0">
         <div class="col-lg-2 h-100 second-pane">
